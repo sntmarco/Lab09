@@ -6,12 +6,12 @@ class Model:
     def __init__(self):
         self.tour_map = {} # Mappa ID tour -> oggetti Tour
         self.attrazioni_map = {} # Mappa ID attrazione -> oggetti Attrazione
+        self.relazioni = {}
 
         self._pacchetto_ottimo = []
         self._valore_ottimo: int = -1
         self._costo = 0
 
-        # TODO: Aggiungere eventuali altri attributi
 
         # Caricamento
         self.load_tour()
@@ -38,8 +38,7 @@ class Model:
             --> Ogni Tour ha un set di Attrazione.
             --> Ogni Attrazione ha un set di Tour.
         """
-
-        # TODO
+        self.relazioni = TourDAO.get_tour_attrazioni()
 
     def genera_pacchetto(self, id_regione: str, max_giorni: int = None, max_budget: float = None):
         """
@@ -55,8 +54,11 @@ class Model:
         self._pacchetto_ottimo = []
         self._costo = 0
         self._valore_ottimo = -1
+        self._giorno = int(0)
 
-        # TODO
+
+
+
 
         return self._pacchetto_ottimo, self._costo, self._valore_ottimo
 
