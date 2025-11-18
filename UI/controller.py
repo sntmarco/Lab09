@@ -2,7 +2,6 @@ import flet as ft
 from UI.view import View
 from model.model import Model
 
-
 class Controller:
     def __init__(self, view: View, model: Model):
         self._model = model
@@ -12,6 +11,10 @@ class Controller:
         self.regione_selezionata = None
         self.durata = None
         self.costo = None
+
+        self.connessione = model.load_regioni()
+        if self.connessione is None:
+            self._view.show_alert("❌ Errore di connessione al database")
 
     def on_regione_change(self, e):
         """Aggiorna la regione selezionata e salva il valore."""
@@ -27,7 +30,10 @@ class Controller:
             for regione in sorted(regioni):
                 self._view.dd_regione.options.append(ft.dropdown.Option(key=regione.id,text=regione.nome))
         else:
-            self._view.show_alert("Errore nel caricamento delle regioni.")
+            if self.connessione is None:
+                self._view.show_alert("❌ Errore di connessione al database")
+            else:
+                self._view.show_alert("Errore nel caricamento delle regioni.")
 
         self._view.update()
 
