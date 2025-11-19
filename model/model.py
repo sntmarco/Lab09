@@ -7,6 +7,7 @@ class Model:
         self.tour_map = {} # Mappa ID tour -> oggetti Tour
         self.attrazioni_map = {} # Mappa ID attrazione -> oggetti Attrazione
         self.relazioni = {}
+        self.attrazioni_dao = {}
 
         self._pacchetto_ottimo = []
         self._valore_ottimo: int = -1
@@ -27,6 +28,7 @@ class Model:
     def load_tour(self):
         """ Carica tutti i tour in un dizionario [id, Tour]"""
         self.tour_map = TourDAO.get_tour()
+        self.attrazioni_dao = AttrazioneDAO.get_attrazioni()
 
     def load_attrazioni(self):
         """ Carica tutte le attrazioni in un dizionario [id, Attrazione]"""
@@ -67,7 +69,7 @@ class Model:
             durata_corrente=0,
             costo_corrente=0,
             valore_corrente=0,
-            attrazioni_usate=set(),
+            attrazioni_usate= set(),
             max_giorni=max_giorni,
             max_budget=max_budget
         )
@@ -96,19 +98,18 @@ class Model:
             if max_budget is not None and costo_corrente + tour.costo > max_budget:
                 continue
 
-            self.relazioni_tour = {}
-            for id_tour, attrazione in self.relazioni:
-                if id_tour not in self.relazioni_tour:
-                    self.relazioni_tour[id_tour] = set()
-                self.relazioni_tour[id_tour].add(attrazione)
+            attrazioni_tour = set()
+            for relazione in self.relazioni:
+                if relazione["id_tour"] == tour.id:
+                    attrazioni_tour.add(relazione["id_attrazione"])
 
-            attrazioni_tour = self.relazioni[tour.id]
-            if attrazioni_usate.intersection(attrazioni_tour):
-                continue
-
+            nuovo_valore = valore_corrente
+            nuove_attrazioni = attrazioni_usate.copy()
+            for id_attrazione in attrazioni_tour:
+                if id_attrazione not in nuove_attrazioni:
+                    nuovo_valore += self.attrazioni_dao.get(id_attrazione, 0).valore_culturale
+                    nuove_attrazioni.add(id_attrazione)
             pacchetto_parziale.append(tour)
-            nuovo_valore = valore_corrente + tour.valore_culturale
-            nuove_attrazioni = attrazioni_usate.union(attrazioni_tour)
 
             self._ricorsione(
                 i + 1,

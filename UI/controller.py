@@ -75,5 +75,5 @@ class Controller:
             self._view.lista_visualizzazione.controls.append(
                 ft.Text(f"Il pacchetto ottimo costa {costo}€ e ha valore culturale pari a {val_culturale}:"))
             for tour in pacchetto:
-                self._view.lista_visualizzazione.controls.append(ft.Text(f" •    {tour} → {tour.attrazioni}"))
+                self._view.lista_visualizzazione.controls.append(ft.Text(f" •    {tour}"))
             self._view.update()
